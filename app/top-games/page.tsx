@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { getSteamHeaderImage } from "@/lib/steam-image-api";
-import type { SteamSpyGame } from "@/lib/types";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
+import { getSteamHeaderImage } from '@/lib/steam-image-api';
+import type { SteamSpyGame } from '@/lib/types';
 
 function formatCCU(ccu: number): string {
   if (ccu >= 1_000_000) return `${(ccu / 1_000_000).toFixed(1)}M`;
@@ -20,35 +20,35 @@ export default function TopGamesPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
+    const fetchGames = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          perPage: '100',
+          sortBy: 'players',
+        });
+
+        const response = await fetch(`/api/top-games?${params.toString()}`);
+        if (response.ok) {
+          const data = await response.json();
+          setGames(data.games);
+          setTotalPages(data.totalPages);
+        }
+      } catch (error) {
+        console.error('Error fetching top games:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchGames();
   }, [page]);
 
-  const fetchGames = async () => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        perPage: '100',
-        sortBy: 'players',
-      });
-
-      const response = await fetch(`/api/top-games?${params.toString()}`);
-      if (response.ok) {
-        const data = await response.json();
-        setGames(data.games);
-        setTotalPages(data.totalPages);
-      }
-    } catch (error) {
-      console.error("Error fetching top games:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
-    if (score >= 60) return "text-yellow-400";
-    return "text-red-400";
+    if (score >= 80) return 'text-green-400';
+    if (score >= 60) return 'text-yellow-400';
+    return 'text-red-400';
   };
 
   return (
@@ -83,18 +83,27 @@ export default function TopGamesPage() {
             <div className="space-y-2">
               {games.map((game, index) => {
                 const rank = (page - 1) * 100 + index + 1;
-                const totalReviews = (game.positive || 0) + (game.negative || 0);
-                const score = totalReviews > 0
-                  ? Math.round((game.positive / totalReviews) * 100)
-                  : game.userscore;
+                const totalReviews =
+                  (game.positive || 0) + (game.negative || 0);
+                const score =
+                  totalReviews > 0
+                    ? Math.round((game.positive / totalReviews) * 100)
+                    : game.userscore;
                 const imageUrl = getSteamHeaderImage(game.appid);
-                const priceDisplay = game.price === '0' ? 'Free' : game.price ? `$${(parseFloat(game.price) / 100).toFixed(2)}` : '';
+                const priceDisplay =
+                  game.price === '0'
+                    ? 'Free'
+                    : game.price
+                      ? `$${(parseFloat(game.price) / 100).toFixed(2)}`
+                      : '';
 
                 return (
                   <Link key={game.appid} href={`/game/${game.appid}`}>
                     <div className="group flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 transition-all hover:border-white/15 hover:bg-white/[0.06]">
                       {/* Rank */}
-                      <span className={`w-10 text-center text-lg font-bold ${rank <= 3 ? 'text-yellow-400' : 'text-gray-500'}`}>
+                      <span
+                        className={`w-10 text-center text-lg font-bold ${rank <= 3 ? 'text-yellow-400' : 'text-gray-500'}`}
+                      >
                         {rank}
                       </span>
 
@@ -115,7 +124,9 @@ export default function TopGamesPage() {
                           {game.name}
                         </h3>
                         {game.genre && (
-                          <p className="truncate text-xs text-gray-500">{game.genre}</p>
+                          <p className="truncate text-xs text-gray-500">
+                            {game.genre}
+                          </p>
                         )}
                       </div>
 
@@ -142,7 +153,9 @@ export default function TopGamesPage() {
 
                       {/* Price */}
                       <div className="hidden w-24 text-right md:block">
-                        <span className={`text-sm font-medium ${priceDisplay === 'Free' ? 'text-green-400' : 'text-gray-300'}`}>
+                        <span
+                          className={`text-sm font-medium ${priceDisplay === 'Free' ? 'text-green-400' : 'text-gray-300'}`}
+                        >
                           {priceDisplay}
                         </span>
                       </div>

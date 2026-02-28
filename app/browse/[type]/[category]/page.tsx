@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { use, useEffect, useState } from "react";
-import Link from "next/link";
-import { GameCard } from "@/components/game-card";
-import type { SteamSpyGame } from "@/lib/types";
+import { use, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { GameCard } from '@/components/game-card';
+import type { SteamSpyGame } from '@/lib/types';
 
 interface PageProps {
   params: Promise<{ type: string; category: string }>;
@@ -19,28 +19,27 @@ export default function CategoryDetailPage({ params }: PageProps) {
   const decodedCategory = decodeURIComponent(category);
 
   useEffect(() => {
-    fetchGames();
-  }, [type, category, page]);
+    const fetchGames = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `/api/categories/games?type=${type}&value=${encodeURIComponent(decodedCategory)}&page=${page}&perPage=20`
+        );
 
-  const fetchGames = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `/api/categories/games?type=${type}&value=${encodeURIComponent(decodedCategory)}&page=${page}&perPage=20`
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setGames(data.games);
-        setTotalPages(data.totalPages);
+        if (response.ok) {
+          const data = await response.json();
+          setGames(data.games);
+          setTotalPages(data.totalPages);
+        }
+      } catch (error) {
+        console.error('Error fetching games:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching games:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
+    fetchGames();
+  }, [type, category, decodedCategory, page]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-black">
@@ -64,16 +63,20 @@ export default function CategoryDetailPage({ params }: PageProps) {
           </div>
         ) : games.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-xl text-gray-400">No games found in this category.</p>
+            <p className="text-xl text-gray-400">
+              No games found in this category.
+            </p>
           </div>
         ) : (
           <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {games.map((game) => {
-                const totalReviews = (game.positive || 0) + (game.negative || 0);
-                const score = totalReviews > 0
-                  ? Math.round((game.positive / totalReviews) * 100)
-                  : game.userscore;
+                const totalReviews =
+                  (game.positive || 0) + (game.negative || 0);
+                const score =
+                  totalReviews > 0
+                    ? Math.round((game.positive / totalReviews) * 100)
+                    : game.userscore;
                 return (
                   <GameCard
                     key={game.appid}

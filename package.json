@@ -10,14 +10,18 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.2.8",
     "axios": "^1.6.0",
-    "clsx": "^2.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "framer-motion": "^11.0.0",
+    "lucide-react": "^0.575.0",
     "next": "^15.0.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "swr": "^2.4.1",
-    "tailwind-merge": "^2.2.0",
+    "tailwind-merge": "^2.6.1",
+    "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.1.0",
     "vader-sentiment": "^1.1.3"
   },

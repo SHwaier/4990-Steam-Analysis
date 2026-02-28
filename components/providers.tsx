@@ -1,13 +1,7 @@
-"use client";
+'use client';
 
-import { WishlistProvider } from "@/lib/wishlist-context";
-import { Navbar } from "./navbar";
+import { WishlistProvider } from '@/lib/wishlist-context';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <WishlistProvider>
-      <Navbar />
-      {children}
-    </WishlistProvider>
-  );
+  return <WishlistProvider>{children}</WishlistProvider>;
 }

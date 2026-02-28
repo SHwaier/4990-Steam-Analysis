@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import { usePathname } from "next/navigation";
-import { useWishlist } from "@/lib/wishlist-context";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useWishlist } from '@/lib/wishlist-context';
+import { cn } from '@/lib/utils';
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -12,14 +12,14 @@ export function Navbar() {
   const { wishlistCount } = useWishlist();
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/top-games", label: "Top Games" },
-    { href: "/browse", label: "Browse" },
-    { href: "/wishlist", label: "Wishlist", badge: wishlistCount },
+    { href: '/', label: 'Home' },
+    { href: '/top-games', label: 'Top Games' },
+    { href: '/browse', label: 'Browse' },
+    { href: '/wishlist', label: 'Wishlist', badge: wishlistCount },
   ];
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
+    if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   };
 
@@ -41,16 +41,16 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative px-3 py-2 text-sm font-medium transition-colors",
+                  'relative px-3 py-2 text-sm font-medium transition-colors',
                   isActive(link.href)
-                    ? "text-white"
-                    : "text-gray-400 hover:text-white"
+                    ? 'text-white'
+                    : 'text-gray-400 hover:text-white'
                 )}
               >
                 {link.label}
                 {link.badge !== undefined && link.badge > 0 && (
                   <span className="absolute -right-2 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
-                    {link.badge > 99 ? "99+" : link.badge}
+                    {link.badge > 99 ? '99+' : link.badge}
                   </span>
                 )}
                 {isActive(link.href) && (
@@ -68,20 +68,20 @@ export function Navbar() {
           >
             <span
               className={cn(
-                "h-0.5 w-6 bg-white transition-all",
-                isMobileMenuOpen && "rotate-45 translate-y-2"
+                'h-0.5 w-6 bg-white transition-all',
+                isMobileMenuOpen && 'rotate-45 translate-y-2'
               )}
             />
             <span
               className={cn(
-                "h-0.5 w-6 bg-white transition-all",
-                isMobileMenuOpen && "opacity-0"
+                'h-0.5 w-6 bg-white transition-all',
+                isMobileMenuOpen && 'opacity-0'
               )}
             />
             <span
               className={cn(
-                "h-0.5 w-6 bg-white transition-all",
-                isMobileMenuOpen && "-rotate-45 -translate-y-2"
+                'h-0.5 w-6 bg-white transition-all',
+                isMobileMenuOpen && '-rotate-45 -translate-y-2'
               )}
             />
           </button>
@@ -97,16 +97,16 @@ export function Navbar() {
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                    'flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-colors',
                     isActive(link.href)
-                      ? "bg-white/10 text-white"
-                      : "text-gray-400 hover:bg-white/5 hover:text-white"
+                      ? 'bg-white/10 text-white'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
                   )}
                 >
                   <span>{link.label}</span>
                   {link.badge !== undefined && link.badge > 0 && (
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
-                      {link.badge > 99 ? "99+" : link.badge}
+                      {link.badge > 99 ? '99+' : link.badge}
                     </span>
                   )}
                 </Link>

@@ -17,8 +17,8 @@ An AI-powered sentiment analysis tool for Steam game reviews built with Next.js,
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Utility-first CSS framework
 - **Framer Motion** - Animations
-- **Sentiment.js** - NLP sentiment analysis
-- **Steam API** - Game data and reviews
+- **VADER Sentiment** - Advanced NLP sentiment analysis heuristics
+- **Steam API & SteamSpy API** - Game data, player counts, and reviews
 
 ## Getting Started
 
@@ -29,17 +29,20 @@ An AI-powered sentiment analysis tool for Steam game reviews built with Next.js,
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone `https://github.com/UmayerK/steam-analysis.git`
 cd "steam-analysis"
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -77,31 +80,40 @@ npm run dev
 ## API Endpoints
 
 ### Games
+
 - `GET /api/games/random` - Get random popular games for hero banner
 - `GET /api/games/search?q={query}` - Search for games by name
 - `GET /api/games/[appid]` - Get detailed game information
 
 ### Reviews
+
 - `GET /api/reviews/[appid]` - Get reviews with sentiment analysis
 
 ### Sentiment
+
 - `GET /api/sentiment/[appid]` - Get sentiment statistics and trends
 
 ## Features Explained
 
 ### Sentiment Analysis
-The app uses the `sentiment` library to perform NLP analysis on Steam review text. Each review gets:
-- A sentiment score (-5 to +5)
+
+The app uses the `vader-sentiment` library to perform robust NLP analysis on Steam review text. Each review is scored on a 0-100 scale using a composite of factors:
+
+- VADER compound sentiment score (-1 to +1 scaled appropriately)
+- Review effort (character length)
+- Player experience (hours played)
+- Community helpfulness (upvotes)
 - A sentiment label (positive, neutral, negative)
-- Identification of positive and negative keywords
 
 ### Hero Banner
+
 - Displays 5 random popular games
 - Auto-rotates every 5 seconds
 - Shows sentiment percentage for each game
 - Links to detailed game page and Steam store
 
 ### Game Detail Page
+
 - Game metadata (description, price, release date, etc.)
 - Overall sentiment statistics
 - Sentiment trend timeline
@@ -111,9 +123,11 @@ The app uses the `sentiment` library to perform NLP analysis on Steam review tex
 ## Customization
 
 ### Adding More Games to Hero Banner
+
 Edit `lib/steam-api.ts` and modify the `getPopularGameIds()` function to include different game App IDs.
 
 ### Styling
+
 All styling uses Tailwind CSS. Modify classes in components or extend the theme in `tailwind.config.ts`.
 
 ## Building for Production
@@ -130,6 +144,7 @@ npm start
 - Some Steam games may not have reviews available
 - Sentiment analysis is performed server-side for better performance
 - Workshop features are not available as they require authentication
+- **Performance Caching**: To improve latency and avoid API rate limits, heavy API requests (like Top Games and Category Browsing) are cached on the server for 1 hour. Because of this, data such as concurrent player counts or newly released games may be delayed by up to 60 minutes. Client-side SWR caching is also implemented for instantaneous page transitions.
 
 ## License
 
@@ -137,6 +152,7 @@ MIT
 
 ## Acknowledgments
 
-- Steam for providing the API
-- Aceternity UI for design inspiration
-- Sentiment.js for NLP analysis
+- Steam for providing the public API
+- SteamSpy for providing trending and categorization metrics
+- Aceternity UI for design components and inspiration
+- VADER Sentiment for lexical NLP analysis

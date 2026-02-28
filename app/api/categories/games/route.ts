@@ -1,5 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { getGamesByGenre, getGamesByTag } from '@/lib/steamspy-api';
+
+const getCachedCategoryGames = unstable_cache(
+  async (type: string, value: string, page: number, perPage: number) => {
+    let games;
+    if (type === 'genre') {
+      games = await getGamesByGenre(value);
+    } else if (type === 'tag') {
+      games = await getGamesByTag(value);
+    } else {
+      throw new Error('Invalid type parameter. Must be "genre" or "tag"');
+    }
+
+    // Pagination
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const paginatedGames = games.slice(startIndex, endIndex);
+
+    return {
+      games: paginatedGames,
+      total: games.length,
+      page,
+      perPage,
+      totalPages: Math.ceil(games.length / perPage),
+    };
+  },
+  ['categories-games-api'],
+  { revalidate: 3600 } // Cache for 1 hour
+);
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,30 +45,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let games;
-    if (type === 'genre') {
-      games = await getGamesByGenre(value);
-    } else if (type === 'tag') {
-      games = await getGamesByTag(value);
-    } else {
-      return NextResponse.json(
-        { error: 'Invalid type parameter. Must be "genre" or "tag"' },
-        { status: 400 }
-      );
-    }
+    const data = await getCachedCategoryGames(type, value, page, perPage);
 
-    // Pagination
-    const startIndex = (page - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    const paginatedGames = games.slice(startIndex, endIndex);
-
-    return NextResponse.json({
-      games: paginatedGames,
-      total: games.length,
-      page,
-      perPage,
-      totalPages: Math.ceil(games.length / perPage),
-    });
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching games by category:', error);
     return NextResponse.json(

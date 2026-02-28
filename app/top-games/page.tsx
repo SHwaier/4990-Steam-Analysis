@@ -13,37 +13,26 @@ function formatCCU(ccu: number): string {
   return ccu.toLocaleString();
 }
 
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function TopGamesPage() {
-  const [games, setGames] = useState<SteamSpyGame[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    const fetchGames = async () => {
-      setIsLoading(true);
-      try {
-        const params = new URLSearchParams({
-          page: page.toString(),
-          perPage: '100',
-          sortBy: 'players',
-        });
+  const params = new URLSearchParams({
+    page: page.toString(),
+    perPage: '100',
+    sortBy: 'players',
+  });
 
-        const response = await fetch(`/api/top-games?${params.toString()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setGames(data.games);
-          setTotalPages(data.totalPages);
-        }
-      } catch (error) {
-        console.error('Error fetching top games:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const { data, error, isLoading } = useSWR(
+    `/api/top-games?${params.toString()}`,
+    fetcher
+  );
 
-    fetchGames();
-  }, [page]);
+  const games: SteamSpyGame[] = data?.games || [];
+  const totalPages = data?.totalPages || 1;
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-400';
@@ -115,6 +104,7 @@ export default function TopGamesPage() {
                           fill
                           sizes="64px"
                           className="object-cover"
+                          priority={index < 10}
                         />
                       </div>
 

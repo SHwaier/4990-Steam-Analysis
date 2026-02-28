@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import {
   getTop100Games,
   filterByPriceRange,
@@ -6,15 +7,14 @@ import {
   sortGames,
 } from '@/lib/steamspy-api';
 
-export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const priceRange = searchParams.get('priceRange') as 'free' | 'under10' | '10to30' | 'over30' | null;
-    const genre = searchParams.get('genre');
-    const sortBy = searchParams.get('sortBy') as 'players' | 'rating' | 'name' | null;
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const perPage = parseInt(searchParams.get('perPage') || '20', 10);
-
+const getCachedTopGames = unstable_cache(
+  async (
+    page: number,
+    perPage: number,
+    priceRange: 'free' | 'under10' | '10to30' | 'over30' | null,
+    genre: string | null,
+    sortBy: 'players' | 'rating' | 'name' | null
+  ) => {
     // Fetch top 100 games
     let games = await getTop100Games();
 
@@ -37,13 +37,45 @@ export async function GET(request: NextRequest) {
     const endIndex = startIndex + perPage;
     const paginatedGames = games.slice(startIndex, endIndex);
 
-    return NextResponse.json({
+    return {
       games: paginatedGames,
       total: games.length,
       page,
       perPage,
       totalPages: Math.ceil(games.length / perPage),
-    });
+    };
+  },
+  ['top-games-api'],
+  { revalidate: 3600 } // Cache for 1 hour
+);
+
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const priceRange = searchParams.get('priceRange') as
+      | 'free'
+      | 'under10'
+      | '10to30'
+      | 'over30'
+      | null;
+    const genre = searchParams.get('genre');
+    const sortBy = searchParams.get('sortBy') as
+      | 'players'
+      | 'rating'
+      | 'name'
+      | null;
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const perPage = parseInt(searchParams.get('perPage') || '20', 10);
+
+    const data = await getCachedTopGames(
+      page,
+      perPage,
+      priceRange,
+      genre,
+      sortBy
+    );
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error in top-games API:', error);
     return NextResponse.json(

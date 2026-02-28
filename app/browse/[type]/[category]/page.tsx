@@ -9,37 +9,23 @@ interface PageProps {
   params: Promise<{ type: string; category: string }>;
 }
 
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function CategoryDetailPage({ params }: PageProps) {
   const { type, category } = use(params);
-  const [games, setGames] = useState<SteamSpyGame[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
   const decodedCategory = decodeURIComponent(category);
 
-  useEffect(() => {
-    const fetchGames = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `/api/categories/games?type=${type}&value=${encodeURIComponent(decodedCategory)}&page=${page}&perPage=20`
-        );
+  const { data, error, isLoading } = useSWR(
+    `/api/categories/games?type=${type}&value=${encodeURIComponent(decodedCategory)}&page=${page}&perPage=20`,
+    fetcher
+  );
 
-        if (response.ok) {
-          const data = await response.json();
-          setGames(data.games);
-          setTotalPages(data.totalPages);
-        }
-      } catch (error) {
-        console.error('Error fetching games:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchGames();
-  }, [type, category, decodedCategory, page]);
+  const games: SteamSpyGame[] = data?.games || [];
+  const totalPages = data?.totalPages || 1;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-black">
@@ -70,7 +56,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
         ) : (
           <>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {games.map((game) => {
+              {games.map((game, index) => {
                 const totalReviews =
                   (game.positive || 0) + (game.negative || 0);
                 const score =
@@ -88,6 +74,7 @@ export default function CategoryDetailPage({ params }: PageProps) {
                     genre={game.genre}
                     owners={game.owners}
                     isFree={game.price === '0'}
+                    priority={index < 6}
                   />
                 );
               })}

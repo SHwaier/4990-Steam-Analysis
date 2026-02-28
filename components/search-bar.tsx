@@ -1,13 +1,15 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import type { SteamGame } from "@/lib/types";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useDebounce } from 'use-debounce';
+import { cn } from '@/lib/utils';
+import type { SteamGame } from '@/lib/types';
 
 export function SearchBar() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
+  const [debouncedQuery] = useDebounce(query, 300);
   const [results, setResults] = useState<SteamGame[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -21,30 +23,28 @@ export function SearchBar() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/games/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(
+        `/api/games/search?q=${encodeURIComponent(searchQuery)}`
+      );
       if (response.ok) {
         const data = await response.json();
         setResults(data);
         setIsOpen(true);
       }
     } catch (error) {
-      console.error("Error searching games:", error);
+      console.error('Error searching games:', error);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      searchGames(query);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query, searchGames]);
+    searchGames(debouncedQuery);
+  }, [debouncedQuery, searchGames]);
 
   const handleGameClick = (appid: number) => {
     setIsOpen(false);
-    setQuery("");
+    setQuery('');
     router.push(`/game/${appid}`);
   };
 
@@ -57,7 +57,7 @@ export function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for Steam games..."
           className={cn(
-            "w-full rounded-full border border-white/20 bg-slate-900/50 px-6 py-4 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20"
+            'w-full rounded-full border border-white/20 bg-slate-900/50 px-6 py-4 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20'
           )}
         />
         {isLoading && (
@@ -77,7 +77,9 @@ export function SearchBar() {
                 className="w-full px-6 py-3 text-left text-white hover:bg-white/10 transition-colors border-b border-white/5 last:border-b-0"
               >
                 <div className="font-medium">{game.name}</div>
-                <div className="text-xs text-gray-400">App ID: {game.appid}</div>
+                <div className="text-xs text-gray-400">
+                  App ID: {game.appid}
+                </div>
               </button>
             ))}
           </div>

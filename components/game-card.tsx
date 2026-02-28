@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { WishlistButton } from "./wishlist-button";
-import { getSteamHeaderImage } from "@/lib/steam-image-api";
+import Link from 'next/link';
+import Image from 'next/image';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
+import { WishlistButton } from './wishlist-button';
+import { getSteamHeaderImage } from '@/lib/steam-image-api';
 
 interface GameCardProps {
   appid: number;
@@ -17,6 +17,7 @@ interface GameCardProps {
   genre?: string;
   owners?: string;
   isFree?: boolean;
+  priority?: boolean;
 }
 
 export function GameCard({
@@ -29,11 +30,12 @@ export function GameCard({
   genre,
   owners,
   isFree,
+  priority = false,
 }: GameCardProps) {
   const getScoreColor = (scoreValue: number) => {
-    if (scoreValue >= 80) return "text-green-400";
-    if (scoreValue >= 60) return "text-yellow-400";
-    return "text-red-400";
+    if (scoreValue >= 80) return 'text-green-400';
+    if (scoreValue >= 60) return 'text-yellow-400';
+    return 'text-red-400';
   };
 
   const formatOwners = (ownersStr?: string) => {
@@ -67,7 +69,7 @@ export function GameCard({
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover"
               quality={90}
-              priority={false}
+              priority={priority}
             />
           </div>
           <div className="absolute top-2 right-2">
@@ -87,14 +89,12 @@ export function GameCard({
           <div className="mb-3 flex flex-wrap gap-2">
             {score !== undefined && (
               <Badge variant="default" className="text-xs">
-                <span className={getScoreColor(score)}>
-                  {score}% Positive
-                </span>
+                <span className={getScoreColor(score)}>{score}% Positive</span>
               </Badge>
             )}
             {formatPrice() && (
               <Badge
-                variant={isFree || price === '0' ? "positive" : "default"}
+                variant={isFree || price === '0' ? 'positive' : 'default'}
                 className="text-xs"
               >
                 {formatPrice()}
@@ -114,7 +114,11 @@ export function GameCard({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open(`https://store.steampowered.com/app/${appid}`, '_blank', 'noopener,noreferrer');
+                window.open(
+                  `https://store.steampowered.com/app/${appid}`,
+                  '_blank',
+                  'noopener,noreferrer'
+                );
               }}
               className="flex-1 rounded-full bg-blue-600 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-700"
             >

@@ -8,14 +8,19 @@ const steamApi = axios.create({
 
 /**
  * Get a list of all Steam apps
- * Note: This returns a very large list, use with caution
+ * Since Steam's ISteamApps/GetAppList/v2 is deprecated and returns 404, we use SteamSpy as a fallback.
  */
 export async function getAllSteamApps(): Promise<SteamGame[]> {
   try {
-    const response = await steamApi.get(
-      `${config.steamApiBaseUrl}/ISteamApps/GetAppList/v2/`
+    const response = await axios.get(
+      'https://steamspy.com/api.php?request=all'
     );
-    return response.data.applist.apps;
+    const gamesObj = response.data;
+
+    return Object.values(gamesObj).map((game: any) => ({
+      appid: game.appid,
+      name: game.name,
+    }));
   } catch (error) {
     console.error('Error fetching Steam apps:', error);
     throw new Error('Failed to fetch Steam apps');
@@ -32,7 +37,7 @@ export async function searchGames(query: string): Promise<SteamGame[]> {
 
     // Filter games by search term and limit results
     return allApps
-      .filter(app => app.name.toLowerCase().includes(searchTerm))
+      .filter((app) => app.name.toLowerCase().includes(searchTerm))
       .slice(0, 20);
   } catch (error) {
     console.error('Error searching games:', error);
@@ -43,7 +48,9 @@ export async function searchGames(query: string): Promise<SteamGame[]> {
 /**
  * Get detailed information about a specific game
  */
-export async function getGameDetails(appId: number): Promise<SteamAppDetails | null> {
+export async function getGameDetails(
+  appId: number
+): Promise<SteamAppDetails | null> {
   try {
     const response = await steamApi.get(
       `${config.steamStoreApiBaseUrl}/appdetails`,
@@ -110,25 +117,25 @@ export async function getGameReviews(
  */
 export function getPopularGameIds(): number[] {
   return [
-    730,    // Counter-Strike 2
-    570,    // Dota 2
+    730, // Counter-Strike 2
+    570, // Dota 2
     1172470, // Apex Legends
-    271590,  // GTA V
+    271590, // GTA V
     1091500, // Cyberpunk 2077
     1245620, // Elden Ring
     2358720, // Black Myth: Wukong
     2519060, // Helldivers 2
     2357570, // Hades II
-    292030,  // The Witcher 3
+    292030, // The Witcher 3
     1086940, // Baldur's Gate 3
     1938090, // Call of Duty
-    578080,  // PUBG
-    105600,  // Terraria
+    578080, // PUBG
+    105600, // Terraria
     1426210, // It Takes Two
     2399830, // Lethal Company
     1203220, // Naraka: Bladepoint
     2050650, // Stardew Valley
-    322330,  // Don't Starve Together
+    322330, // Don't Starve Together
     1997040, // Satisfactory
   ];
 }
@@ -136,14 +143,16 @@ export function getPopularGameIds(): number[] {
 /**
  * Get random games for the hero banner
  */
-export async function getRandomGamesForBanner(count: number = 5): Promise<SteamGame[]> {
+export async function getRandomGamesForBanner(
+  count: number = 5
+): Promise<SteamGame[]> {
   const popularIds = getPopularGameIds();
   const shuffled = popularIds.sort(() => 0.5 - Math.random());
   const selectedIds = shuffled.slice(0, count);
 
   try {
     const allApps = await getAllSteamApps();
-    return allApps.filter(app => selectedIds.includes(app.appid));
+    return allApps.filter((app) => selectedIds.includes(app.appid));
   } catch (error) {
     console.error('Error fetching random games:', error);
     return [];

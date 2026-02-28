@@ -57,7 +57,7 @@ export function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for Steam games..."
           className={cn(
-            'w-full rounded-full border border-white/20 bg-slate-900/50 px-6 py-4 text-white placeholder-gray-400 backdrop-blur-sm transition-all focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/20'
+            'w-full rounded-full border border-white/20 bg-slate-900/50 px-6 py-4 text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 focus:border-blue-500/50 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:bg-slate-900/80'
           )}
         />
         {isLoading && (

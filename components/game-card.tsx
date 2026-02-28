@@ -59,7 +59,7 @@ export function GameCard({
 
   return (
     <Link href={`/game/${appid}`}>
-      <Card className="overflow-hidden h-full transition-all hover:scale-105">
+      <Card className="group/card overflow-hidden h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(59,130,246,0.15)] hover:border-blue-500/30">
         <div className="relative">
           <div className="relative h-48 w-full bg-slate-800">
             <Image

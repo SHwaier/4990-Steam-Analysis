@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
-import { Badge } from "./ui/badge";
-import { WishlistButton } from "./wishlist-button";
-import type { SteamAppDetails } from "@/lib/types";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Badge } from './ui/badge';
+import { WishlistButton } from './wishlist-button';
+import type { SteamAppDetails } from '@/lib/types';
 
 interface GameWithDetails {
   appid: number;
@@ -23,13 +23,13 @@ export function HeroBanner() {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const response = await fetch("/api/games/random");
+        const response = await fetch('/api/games/random');
         if (response.ok) {
           const data = await response.json();
           setGames(data);
         }
       } catch (error) {
-        console.error("Error fetching random games:", error);
+        console.error('Error fetching random games:', error);
       } finally {
         setIsLoading(false);
       }
@@ -53,13 +53,15 @@ export function HeroBanner() {
 
     const fetchSentiment = async () => {
       try {
-        const response = await fetch(`/api/sentiment/${games[currentIndex].appid}`);
+        const response = await fetch(
+          `/api/sentiment/${games[currentIndex].appid}`
+        );
         if (response.ok) {
           const data = await response.json();
           setSentimentData(data);
         }
       } catch (error) {
-        console.error("Error fetching sentiment:", error);
+        console.error('Error fetching sentiment:', error);
       }
     };
 
@@ -68,9 +70,21 @@ export function HeroBanner() {
 
   if (isLoading) {
     return (
-      <div className="relative h-[600px] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800">
-        <div className="flex h-full items-center justify-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"></div>
+      <div className="relative h-[600px] w-full overflow-hidden rounded-3xl bg-slate-900 border border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent skeleton-shimmer" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        <div className="relative z-10 flex h-full flex-col justify-end p-12 w-full">
+          <div className="mb-4 flex gap-2">
+            <div className="h-6 w-24 rounded-full bg-white/10" />
+            <div className="h-6 w-32 rounded-full bg-white/10" />
+          </div>
+          <div className="mb-4 h-16 w-3/4 rounded-lg bg-white/10" />
+          <div className="mb-2 h-6 w-full max-w-2xl rounded bg-white/5" />
+          <div className="mb-6 h-6 w-2/3 max-w-xl rounded bg-white/5" />
+          <div className="flex gap-4">
+            <div className="h-12 w-40 rounded-full bg-white/20" />
+            <div className="h-12 w-40 rounded-full bg-white/10" />
+          </div>
         </div>
       </div>
     );
@@ -86,17 +100,19 @@ export function HeroBanner() {
   if (!gameDetails) return null;
 
   const getSentimentVariant = () => {
-    if (!sentimentData?.overall) return "default";
+    if (!sentimentData?.overall) return 'default';
     const avg = sentimentData.overall.averageScore;
-    if (avg > 1) return "positive";
-    if (avg < -1) return "negative";
-    return "neutral";
+    if (avg > 1) return 'positive';
+    if (avg < -1) return 'negative';
+    return 'neutral';
   };
 
   const getSentimentPercentage = () => {
     if (!sentimentData?.overall) return 0;
     const { positiveCount, totalReviews } = sentimentData.overall;
-    return totalReviews > 0 ? Math.round((positiveCount / totalReviews) * 100) : 0;
+    return totalReviews > 0
+      ? Math.round((positiveCount / totalReviews) * 100)
+      : 0;
   };
 
   return (
@@ -182,8 +198,8 @@ export function HeroBanner() {
                 onClick={() => setCurrentIndex(index)}
                 className={`h-2 rounded-full transition-all ${
                   index === currentIndex
-                    ? "w-8 bg-white"
-                    : "w-2 bg-white/40 hover:bg-white/60"
+                    ? 'w-8 bg-white'
+                    : 'w-2 bg-white/40 hover:bg-white/60'
                 }`}
               />
             ))}

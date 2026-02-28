@@ -12,6 +12,13 @@ function formatCCU(ccu: number): string {
   if (ccu >= 1_000) return `${(ccu / 1_000).toFixed(1)}K`;
   return ccu.toLocaleString();
 }
+import { Info } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import useSWR from 'swr';
 
@@ -57,14 +64,31 @@ export default function TopGamesPage() {
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"></div>
           </div>
         ) : (
-          <>
+          <TooltipProvider delayDuration={200}>
             {/* List Header */}
             <div className="mb-2 hidden items-center gap-4 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 md:flex">
               <span className="w-10 text-center">#</span>
               <span className="w-16"></span>
               <span className="flex-1">Game</span>
               <span className="w-40 text-right">Concurrent Players</span>
-              <span className="w-28 text-right">Rating</span>
+              <span className="w-28 flex justify-end">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex w-fit items-center gap-1.5 hover:text-white transition-colors cursor-help">
+                      Rating <Info className="h-3.5 w-3.5" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    className="max-w-[250px] bg-slate-800 border-white/10 text-white leading-relaxed"
+                  >
+                    <p>
+                      This represents the percentage of total positive reviews
+                      (Steam User Rating), not the VADER NLP AI Sentiment score.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </span>
               <span className="w-24 text-right">Price</span>
             </div>
 
@@ -177,7 +201,7 @@ export default function TopGamesPage() {
                 </button>
               </div>
             )}
-          </>
+          </TooltipProvider>
         )}
       </div>
     </main>

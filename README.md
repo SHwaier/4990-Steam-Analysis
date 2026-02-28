@@ -1,11 +1,11 @@
 # Steam Sentiment Analyzer
 
-An AI-powered sentiment analysis tool for Steam game reviews built with Next.js, Tailwind CSS, and Aceternity UI.
+An AI-powered sentiment analysis tool for Steam game reviews built with Next.js, Tailwind CSS, Shadcn UI, and Framer Motion.
 
 ## Features
 
 - **Real-time Sentiment Analysis**: Uses NLP to analyze Steam game reviews and provide sentiment scores
-- **Beautiful UI**: Modern, sleek interface built with Tailwind CSS and Aceternity UI components
+- **Beautiful UI**: Modern, sleek interface built with Tailwind CSS, Framer Motion, and Shadcn UI components
 - **Hero Banner**: Rotating showcase of popular Steam games with sentiment indicators
 - **Search Functionality**: Search for any Steam game
 - **Detailed Game Pages**: View comprehensive sentiment statistics, review trends, and game metadata
@@ -16,7 +16,9 @@ An AI-powered sentiment analysis tool for Steam game reviews built with Next.js,
 - **Next.js 15** - React framework with App Router
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Animations
+- **Framer Motion** - Fluid animations and transitions
+- **Shadcn UI** - Accessible UI component primitives
+- **Lucide React** - Beautiful, consistent iconography
 - **VADER Sentiment** - Advanced NLP sentiment analysis heuristics
 - **Steam API & SteamSpy API** - Game data, player counts, and reviews
 
@@ -58,22 +60,24 @@ npm run dev
 │   │   ├── reviews/      # Review endpoints
 │   │   └── sentiment/    # Sentiment analysis endpoints
 │   ├── game/[appid]/     # Game detail page
+│   ├── top-games/        # Ranked games view
+│   ├── browse/           # Category/Genre browsing
 │   ├── layout.tsx        # Root layout
 │   ├── page.tsx          # Home page
 │   └── globals.css       # Global styles
 ├── components/
-│   ├── ui/               # UI components
-│   │   ├── card.tsx
-│   │   ├── badge.tsx
-│   │   └── spotlight-card.tsx
+│   ├── ui/               # Shadcn UI primitives (badge, tooltip, etc.)
 │   ├── hero-banner.tsx   # Rotating hero banner
-│   └── search-bar.tsx    # Search component
+│   ├── search-bar.tsx    # Debounced Search component
+│   ├── game-card.tsx     # Reusable display card
+│   ├── navbar.tsx        # Global navigation
+│   └── footer.tsx        # Global footer
 ├── lib/
 │   ├── config.ts         # Configuration
 │   ├── steam-api.ts      # Steam API utilities
-│   ├── sentiment-analysis.ts  # Sentiment analysis logic
-│   ├── types.ts          # TypeScript types
-│   └── utils.ts          # Utility functions
+│   ├── sentiment-analysis.ts  # NLP sentiment logic
+│   ├── types.ts          # TypeScript shared types
+│   └── utils.ts          # Utility classes (cn)
 └── README.md
 ```
 
@@ -154,5 +158,5 @@ MIT
 
 - Steam for providing the public API
 - SteamSpy for providing trending and categorization metrics
-- Aceternity UI for design components and inspiration
+- Shadcn UI & Radix UI for accessible component primitives
 - VADER Sentiment for lexical NLP analysis

@@ -42,6 +42,12 @@ export default function GamePage({ params }: PageProps) {
 
   const observerTarget = useRef(null);
 
+  useEffect(() => {
+    document.title = gameDetails?.data?.name
+      ? `${gameDetails.data.name} - Steam Sentiment Analyzer`
+      : 'Loading Game...';
+  }, [gameDetails]);
+
   // Fetch reviews with filters
   const fetchReviews = useCallback(
     async (isLoadMore = false, currentCursor: string | null = null) => {
@@ -366,6 +372,7 @@ export default function GamePage({ params }: PageProps) {
                   label="Language"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
+                  aria-label="Filter reviews by language"
                 >
                   <option value="all">All Languages</option>
                   <option value="english">English</option>
@@ -385,6 +392,7 @@ export default function GamePage({ params }: PageProps) {
                   label="Sort by Sentiment"
                   value={sortBySentiment}
                   onChange={(e) => setSortBySentiment(e.target.value)}
+                  aria-label="Sort reviews by sentiment"
                 >
                   <option value="default">Default</option>
                   <option value="positive">Most Positive</option>
@@ -395,6 +403,7 @@ export default function GamePage({ params }: PageProps) {
                   label="Sort by Playtime"
                   value={sortByPlaytime}
                   onChange={(e) => setSortByPlaytime(e.target.value)}
+                  aria-label="Sort reviews by playtime"
                 >
                   <option value="default">Default</option>
                   <option value="most">Most Hours</option>
@@ -443,20 +452,21 @@ export default function GamePage({ params }: PageProps) {
                     </Card>
                   ))}
 
-                  {/* Infinite scroll trigger */}
-                  {hasMore && (
-                    <div
-                      ref={observerTarget}
-                      className="flex justify-center py-8"
-                    >
-                      {isLoadingMore && (
-                        <div className="flex items-center gap-2 text-gray-400">
-                          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
-                          <span>Loading more reviews...</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  <div
+                    ref={observerTarget}
+                    className="flex justify-center py-8"
+                    aria-live="polite"
+                  >
+                    {isLoadingMore && (
+                      <div
+                        className="flex items-center gap-2 text-gray-400"
+                        role="status"
+                      >
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
+                        <span>Loading more reviews...</span>
+                      </div>
+                    )}
+                  </div>
 
                   {!hasMore && reviews.length > 0 && (
                     <div className="text-center py-8 text-gray-400">

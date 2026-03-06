@@ -100,24 +100,70 @@ export default function TopGamesPage() {
         ) : (
           <TooltipProvider delayDuration={200}>
             {/* List Header */}
-            <div className="mb-2 hidden items-center gap-4 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 md:flex">
-              <span className="w-10 text-center">#</span>
-              <span className="w-16"></span>
-              <button
-                onClick={() => handleSort('name')}
-                className={`flex flex-1 items-center gap-1 transition-colors hover:text-white ${sortBy === 'name' ? 'text-white' : ''}`}
+            <div
+              className="mb-2 hidden items-center gap-4 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 md:flex"
+              role="row"
+            >
+              <div className="w-10 text-center" role="columnheader">
+                #
+              </div>
+              <div
+                className="w-16"
+                role="columnheader"
+                aria-hidden="true"
+              ></div>
+              <div
+                className="flex-1"
+                role="columnheader"
+                aria-sort={
+                  sortBy === 'name'
+                    ? sortOrder === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                }
               >
-                Game <SortIcon field="name" />
-              </button>
-              <button
-                onClick={() => handleSort('players')}
-                className={`flex w-40 justify-end items-center gap-1 transition-colors hover:text-white ${sortBy === 'players' ? 'text-white' : ''}`}
+                <button
+                  onClick={() => handleSort('name')}
+                  aria-label={`Sort by name ${sortBy === 'name' ? (sortOrder === 'desc' ? 'descending' : 'ascending') : ''}`}
+                  className={`flex items-center gap-1 transition-colors hover:text-white ${sortBy === 'name' ? 'text-white' : ''}`}
+                >
+                  Game <SortIcon field="name" />
+                </button>
+              </div>
+              <div
+                className="w-40 flex justify-end"
+                role="columnheader"
+                aria-sort={
+                  sortBy === 'players'
+                    ? sortOrder === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                }
               >
-                Concurrent Players <SortIcon field="players" />
-              </button>
-              <span className="w-28 flex justify-end">
+                <button
+                  onClick={() => handleSort('players')}
+                  aria-label={`Sort by concurrent players ${sortBy === 'players' ? (sortOrder === 'desc' ? 'descending' : 'ascending') : ''}`}
+                  className={`flex items-center gap-1 transition-colors hover:text-white ${sortBy === 'players' ? 'text-white' : ''}`}
+                >
+                  Concurrent Players <SortIcon field="players" />
+                </button>
+              </div>
+              <div
+                className="w-28 flex justify-end"
+                role="columnheader"
+                aria-sort={
+                  sortBy === 'rating'
+                    ? sortOrder === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                }
+              >
                 <button
                   onClick={() => handleSort('rating')}
+                  aria-label={`Sort by rating ${sortBy === 'rating' ? (sortOrder === 'desc' ? 'descending' : 'ascending') : ''}`}
                   className={`flex w-fit items-center gap-1.5 transition-colors hover:text-white ${sortBy === 'rating' ? 'text-white' : ''}`}
                 >
                   <Tooltip>
@@ -139,17 +185,30 @@ export default function TopGamesPage() {
                   </Tooltip>
                   <SortIcon field="rating" />
                 </button>
-              </span>
-              <button
-                onClick={() => handleSort('price')}
-                className={`flex w-24 justify-end items-center gap-1 transition-colors hover:text-white ${sortBy === 'price' ? 'text-white' : ''}`}
+              </div>
+              <div
+                className="w-24 flex justify-end"
+                role="columnheader"
+                aria-sort={
+                  sortBy === 'price'
+                    ? sortOrder === 'desc'
+                      ? 'descending'
+                      : 'ascending'
+                    : 'none'
+                }
               >
-                Price <SortIcon field="price" />
-              </button>
+                <button
+                  onClick={() => handleSort('price')}
+                  aria-label={`Sort by price ${sortBy === 'price' ? (sortOrder === 'desc' ? 'descending' : 'ascending') : ''}`}
+                  className={`flex items-center gap-1 transition-colors hover:text-white ${sortBy === 'price' ? 'text-white' : ''}`}
+                >
+                  Price <SortIcon field="price" />
+                </button>
+              </div>
             </div>
 
             {/* Games List */}
-            <div className="space-y-2">
+            <div className="space-y-2" aria-live="polite">
               {games.map((game, index) => {
                 const rank = (page - 1) * 100 + index + 1;
                 const totalReviews =

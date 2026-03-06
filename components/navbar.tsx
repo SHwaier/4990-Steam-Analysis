@@ -60,11 +60,12 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden flex flex-col items-center justify-center gap-1.5 p-2"
-            aria-label="Toggle menu"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <span
               className={cn(
@@ -89,13 +90,17 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-white/10 py-4">
+          <div
+            id="mobile-menu"
+            className="md:hidden border-t border-white/10 py-4"
+          >
             <div className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={isActive(link.href) ? 'page' : undefined}
                   className={cn(
                     'flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-colors',
                     isActive(link.href)

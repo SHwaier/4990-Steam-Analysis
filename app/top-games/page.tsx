@@ -12,7 +12,8 @@ function formatCCU(ccu: number): string {
   if (ccu >= 1_000) return `${(ccu / 1_000).toFixed(1)}K`;
   return ccu.toLocaleString();
 }
-import { Info } from 'lucide-react';
+
+import { Info, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -26,11 +27,16 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function TopGamesPage() {
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState<'players' | 'rating' | 'price' | 'name'>(
+    'players'
+  );
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const params = new URLSearchParams({
     page: page.toString(),
     perPage: '100',
-    sortBy: 'players',
+    sortBy: sortBy,
+    sortOrder: sortOrder,
   });
 
   const { data, error, isLoading } = useSWR(
@@ -47,6 +53,26 @@ export default function TopGamesPage() {
     return 'text-red-400';
   };
 
+  const handleSort = (field: 'players' | 'rating' | 'price' | 'name') => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('desc');
+    }
+    setPage(1);
+  };
+
+  const SortIcon = ({ field }: { field: string }) => {
+    if (sortBy !== field)
+      return <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />;
+    return sortOrder === 'desc' ? (
+      <ChevronDown className="h-3.5 w-3.5" />
+    ) : (
+      <ChevronUp className="h-3.5 w-3.5" />
+    );
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-black via-slate-950 to-black">
       <div className="container mx-auto px-4 py-12">
@@ -55,7 +81,15 @@ export default function TopGamesPage() {
             Top Games by Concurrent Players
           </h1>
           <p className="mt-2 text-gray-400">
-            Ranked by current concurrent players on Steam
+            Ranked by{' '}
+            {sortBy === 'players'
+              ? 'current concurrent players'
+              : sortBy === 'rating'
+                ? 'user rating'
+                : sortBy === 'price'
+                  ? 'price'
+                  : 'name'}{' '}
+            on Steam
           </p>
         </div>
 
@@ -69,27 +103,49 @@ export default function TopGamesPage() {
             <div className="mb-2 hidden items-center gap-4 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 md:flex">
               <span className="w-10 text-center">#</span>
               <span className="w-16"></span>
-              <span className="flex-1">Game</span>
-              <span className="w-40 text-right">Concurrent Players</span>
+              <button
+                onClick={() => handleSort('name')}
+                className={`flex flex-1 items-center gap-1 transition-colors hover:text-white ${sortBy === 'name' ? 'text-white' : ''}`}
+              >
+                Game <SortIcon field="name" />
+              </button>
+              <button
+                onClick={() => handleSort('players')}
+                className={`flex w-40 justify-end items-center gap-1 transition-colors hover:text-white ${sortBy === 'players' ? 'text-white' : ''}`}
+              >
+                Concurrent Players <SortIcon field="players" />
+              </button>
               <span className="w-28 flex justify-end">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex w-fit items-center gap-1.5 hover:text-white transition-colors cursor-help">
-                      Rating <Info className="h-3.5 w-3.5" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    className="max-w-[250px] bg-slate-800 border-white/10 text-white leading-relaxed"
-                  >
-                    <p>
-                      This represents the percentage of total positive reviews
-                      (Steam User Rating), not the VADER NLP AI Sentiment score.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
+                <button
+                  onClick={() => handleSort('rating')}
+                  className={`flex w-fit items-center gap-1.5 transition-colors hover:text-white ${sortBy === 'rating' ? 'text-white' : ''}`}
+                >
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1.5 cursor-help">
+                        Rating <Info className="h-3.5 w-3.5" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="top"
+                      className="max-w-[250px] bg-slate-800 border-white/10 text-white leading-relaxed"
+                    >
+                      <p>
+                        This represents the percentage of total positive reviews
+                        (Steam User Rating), not the VADER NLP AI Sentiment
+                        score.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <SortIcon field="rating" />
+                </button>
               </span>
-              <span className="w-24 text-right">Price</span>
+              <button
+                onClick={() => handleSort('price')}
+                className={`flex w-24 justify-end items-center gap-1 transition-colors hover:text-white ${sortBy === 'price' ? 'text-white' : ''}`}
+              >
+                Price <SortIcon field="price" />
+              </button>
             </div>
 
             {/* Games List */}

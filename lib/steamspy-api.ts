@@ -156,7 +156,10 @@ export function filterByPriceRange(
 /**
  * Filter games by genre
  */
-export function filterByGenre(games: SteamSpyGame[], genre: string): SteamSpyGame[] {
+export function filterByGenre(
+  games: SteamSpyGame[],
+  genre: string
+): SteamSpyGame[] {
   return games.filter((game) =>
     game.genre.toLowerCase().includes(genre.toLowerCase())
   );
@@ -167,18 +170,43 @@ export function filterByGenre(games: SteamSpyGame[], genre: string): SteamSpyGam
  */
 export function sortGames(
   games: SteamSpyGame[],
-  sortBy: 'players' | 'rating' | 'name' = 'players'
+  sortBy: 'players' | 'rating' | 'name' | 'price' = 'players',
+  sortOrder: 'asc' | 'desc' = 'desc'
 ): SteamSpyGame[] {
   const sorted = [...games];
 
-  switch (sortBy) {
-    case 'players':
-      return sorted.sort((a, b) => b.ccu - a.ccu);
-    case 'rating':
-      return sorted.sort((a, b) => b.userscore - a.userscore);
-    case 'name':
-      return sorted.sort((a, b) => a.name.localeCompare(b.name));
-    default:
-      return sorted;
-  }
+  sorted.sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortBy) {
+      case 'players':
+        comparison = (b.ccu || 0) - (a.ccu || 0);
+        break;
+      case 'rating': {
+        const getScore = (g: SteamSpyGame) => {
+          const totalReviews = (g.positive || 0) + (g.negative || 0);
+          return totalReviews > 0
+            ? (g.positive / totalReviews) * 100
+            : g.userscore || 0;
+        };
+        comparison = getScore(b) - getScore(a);
+        break;
+      }
+      case 'price': {
+        const priceA = parseFloat(a.price || '0');
+        const priceB = parseFloat(b.price || '0');
+        comparison = priceB - priceA;
+        break;
+      }
+      case 'name':
+        comparison = a.name.localeCompare(b.name);
+        break;
+      default:
+        comparison = 0;
+    }
+
+    return sortOrder === 'desc' ? comparison : -comparison;
+  });
+
+  return sorted;
 }

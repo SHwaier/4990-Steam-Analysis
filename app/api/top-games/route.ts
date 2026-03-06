@@ -13,7 +13,8 @@ const getCachedTopGames = unstable_cache(
     perPage: number,
     priceRange: 'free' | 'under10' | '10to30' | 'over30' | null,
     genre: string | null,
-    sortBy: 'players' | 'rating' | 'name' | null
+    sortBy: 'players' | 'rating' | 'name' | 'price' | null,
+    sortOrder: 'asc' | 'desc'
   ) => {
     // Fetch top 100 games
     let games = await getTop100Games();
@@ -29,7 +30,7 @@ const getCachedTopGames = unstable_cache(
 
     // Sort games
     if (sortBy) {
-      games = sortGames(games, sortBy);
+      games = sortGames(games, sortBy, sortOrder);
     }
 
     // Pagination
@@ -63,7 +64,10 @@ export async function GET(request: NextRequest) {
       | 'players'
       | 'rating'
       | 'name'
+      | 'price'
       | null;
+    const sortOrder =
+      (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const perPage = parseInt(searchParams.get('perPage') || '20', 10);
 
@@ -72,7 +76,8 @@ export async function GET(request: NextRequest) {
       perPage,
       priceRange,
       genre,
-      sortBy
+      sortBy,
+      sortOrder
     );
 
     return NextResponse.json(data);

@@ -102,14 +102,13 @@ export interface SentimentScore {
 
 export interface ReviewWithSentiment extends SteamReview {
   sentiment: SentimentScore;
-  sentimentLabel: 'positive' | 'neutral' | 'negative';
+  sentimentLabel: 'positive' | 'negative';
 }
 
 export interface SentimentStats {
   overall: {
     averageScore: number;
     positiveCount: number;
-    neutralCount: number;
     negativeCount: number;
     totalReviews: number;
   };

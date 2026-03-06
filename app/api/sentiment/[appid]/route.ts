@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getGameReviews } from '@/lib/steam-api';
-import { analyzeReviews, calculateSentimentStats } from '@/lib/sentiment-analysis';
+import {
+  analyzeReviews,
+  calculateSentimentStats,
+} from '@/lib/sentiment-analysis';
 
 export async function GET(
   request: NextRequest,
@@ -11,10 +14,7 @@ export async function GET(
     const appIdNum = parseInt(appid, 10);
 
     if (isNaN(appIdNum)) {
-      return NextResponse.json(
-        { error: 'Invalid app ID' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid app ID' }, { status: 400 });
     }
 
     // Fetch more reviews for better sentiment statistics
@@ -47,7 +47,6 @@ export async function GET(
       overall: {
         averageScore: sentimentStats.overall.averageScore,
         positiveCount: positiveReviews, // Use Steam's total
-        neutralCount: 0, // Steam doesn't track neutral
         negativeCount: negativeReviews, // Use Steam's total
         totalReviews: totalReviews, // Use Steam's total
       },

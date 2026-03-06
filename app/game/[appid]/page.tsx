@@ -225,7 +225,7 @@ export default function GamePage({ params }: PageProps) {
 
         {/* Sentiment Overview */}
         {sentimentStats && (
-          <div className="mb-12 grid gap-6 md:grid-cols-4">
+          <div className="mb-12 grid gap-6 md:grid-cols-3">
             <SpotlightCard>
               <CardTitle>Overall Sentiment</CardTitle>
               <div className="mt-4">
@@ -241,16 +241,6 @@ export default function GamePage({ params }: PageProps) {
               <div className="mt-4">
                 <div className="text-5xl font-bold text-green-400">
                   {sentimentStats.overall.positiveCount}
-                </div>
-                <div className="text-gray-400">Reviews</div>
-              </div>
-            </SpotlightCard>
-
-            <SpotlightCard>
-              <CardTitle>Neutral</CardTitle>
-              <div className="mt-4">
-                <div className="text-5xl font-bold text-yellow-400">
-                  {sentimentStats.overall.neutralCount}
                 </div>
                 <div className="text-gray-400">Reviews</div>
               </div>

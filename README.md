@@ -11,6 +11,16 @@ An AI-powered sentiment analysis tool for Steam game reviews built with Next.js,
 - **Detailed Game Pages**: View comprehensive sentiment statistics, review trends, and game metadata
 - **No Login Required**: Simple and accessible for all users
 
+## Architecture Overview
+
+The Steam Sentiment Analyzer follows a modular architecture designed for efficiency and scalability:
+
+- **User Interface**: Built with React and Next.js for a responsive, modern experience.
+- **API Layer**: Utilizes Next.js API Routes to handle data fetching and processing.
+- **Data Sources**: Integrates with the official Steam API and SteamSpy API for comprehensive game metadata, player counts, and reviews.
+- **Analysis Engine**: Employs VADER (Valence Aware Dictionary and sEntiment Reasoner) combined with custom metadata scoring (hours played, helpfulness) to generate robust sentiment metrics.
+- **Data Flow**: Frontend → Next.js API → Steam/SteamSpy APIs → Sentiment Analysis → UI.
+
 ## Tech Stack
 
 - **Next.js 15** - React framework with App Router
@@ -33,8 +43,8 @@ An AI-powered sentiment analysis tool for Steam game reviews built with Next.js,
 1. Clone the repository:
 
 ```bash
-git clone `https://github.com/UmayerK/steam-analysis.git`
-cd "steam-analysis"
+git clone `https://github.com/SHwaier/4990-Steam-Analysis.git`
+cd "4990-Steam-Analysis"
 ```
 
 2. Install dependencies:
@@ -85,17 +95,88 @@ npm run dev
 
 ### Games
 
-- `GET /api/games/random` - Get random popular games for hero banner
-- `GET /api/games/search?q={query}` - Search for games by name
-- `GET /api/games/[appid]` - Get detailed game information
+#### `GET /api/games/random`
+Get random popular games for the hero banner.
+**Example Response:**
+```json
+[
+  {
+    "appid": 271590,
+    "name": "Grand Theft Auto V Legacy",
+    "details": {
+      "success": true,
+      "data": { ... }
+    }
+  }
+]
+```
+
+#### `GET /api/games/search?q={query}`
+Search for games by name. Returns up to 20 matches.
+**Example Response:**
+```json
+[
+  {
+    "appid": 10,
+    "name": "Counter-Strike"
+  }
+]
+```
+
+#### `GET /api/games/[appid]`
+Get detailed game information.
+**Example Response:**
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
 
 ### Reviews
 
-- `GET /api/reviews/[appid]` - Get reviews with sentiment analysis
+#### `GET /api/reviews/[appid]`
+Get reviews with sentiment analysis.
+**Example Response:**
+```json
+{
+  "success": 1,
+  "query_summary": {
+    "num_reviews": 20,
+    "review_score": 8,
+    "review_score_desc": "Very Positive",
+    "total_positive": 8163954,
+    "total_negative": 1296482,
+    "total_reviews": 9460436
+  },
+  "reviews": [ ... ]
+}
+```
 
 ### Sentiment
 
-- `GET /api/sentiment/[appid]` - Get sentiment statistics and trends
+#### `GET /api/sentiment/[appid]`
+Get sentiment statistics and trends.
+**Example Response:**
+```json
+{
+  "overall": {
+    "averageScore": 51.31,
+    "positiveCount": 2160441,
+    "negativeCount": 338605,
+    "totalReviews": 2499046
+  },
+  "timeline": [ ... ],
+  "steamStats": {
+    "num_reviews": 100,
+    "review_score": 8,
+    "review_score_desc": "Very Positive",
+    "total_positive": 2160441,
+    "total_negative": 338605,
+    "total_reviews": 2499046
+  }
+}
+```
 
 ## Features Explained
 
@@ -123,6 +204,23 @@ The app uses the `vader-sentiment` library to perform robust NLP analysis on Ste
 - Sentiment trend timeline
 - Individual reviews with sentiment scores
 - Direct link to Steam store page
+
+## Visual Overview
+
+The application features a modern dark-themed UI. Screenshots of the core pages can be found in the `Additional_Documentation.pdf` file, including:
+- **Home Page**: Rotating hero banner with featured games.
+- **Top Games**: Ranked list of games by player sentiment.
+- **Browse**: Category and genre-based game discovery.
+- **Game Detail**: Comprehensive analysis with sentiment charts and review breakdowns.
+
+## Roadmap
+
+Future enhancements planned for the Steam Sentiment Analyzer:
+- **Multilingual Support**: Expand sentiment analysis to include non-English reviews.
+- **Enhanced Visualizations**: More interactive and detailed sentiment trend charts.
+- **Custom Filtering**: Allow users to sort sentiment by specific date ranges and time periods.
+- **Niche Game Support**: Improve data gathering for games with smaller review pools.
+- **Advanced Metrics**: Incorporate additional player analytics and engagement data.
 
 ## Customization
 
